@@ -4,10 +4,10 @@ local userId = player.UserId
 -- ✅ Список разрешённых UserId (замени на свои реальные ID)
 local allowedIds = {
     8951663194, -- твой основной аккаунт
-    123457, -- устройство 2
-    123458, -- устройство 3
-    123459, -- устройство 4
-    123460  -- устройство 5
+    123457,     -- устройство 2
+    123458,     -- устройство 3
+    123459,     -- устройство 4
+    123460      -- устройство 5
 }
 
 -- 🔍 Проверка доступа
@@ -92,7 +92,7 @@ end)
 local tutorial = Instance.new("TextLabel", frame)
 tutorial.Size = UDim2.new(0.9, 0, 0, 80)
 tutorial.Position = UDim2.new(0.05, 0, 0.7, 0)
-tutorial.Text = "📌 Tutorial:\n1. Put items in backpack\n2. Rejoin\n3. Press Dupe\n4. Drop item\n5. Rejoin again"
+tutorial.Text = "📌 Tutorial:\n1. Put the loot you want to dupe into your backpack\n2. Rejoin the game with your backpack and loot inside\n3. Press the Dupe button, drop your backpack, then press Rejoin"
 tutorial.TextColor3 = Color3.new(1, 1, 1)
 tutorial.BackgroundTransparency = 1
 tutorial.Font = Enum.Font.SourceSans
