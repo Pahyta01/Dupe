@@ -1,0 +1,102 @@
+local player = game.Players.LocalPlayer
+local userId = player.UserId
+
+-- ✅ Список разрешённых UserId (замени на свои реальные ID)
+local allowedIds = {
+    123456, -- твой основной аккаунт
+    123457, -- устройство 2
+    123458, -- устройство 3
+    123459, -- устройство 4
+    123460  -- устройство 5
+}
+
+-- 🔍 Проверка доступа
+local isAllowed = false
+for _, id in ipairs(allowedIds) do
+    if userId == id then
+        isAllowed = true
+        break
+    end
+end
+
+if not isAllowed then
+    warn("❌ Access denied for UserId:", userId)
+    return
+else
+    warn("✅ Access granted for UserId:", userId)
+end
+
+-- 🧩 Создание GUI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "DupeHub"
+gui.ResetOnSpawn = false
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 400, 0, 300)
+frame.Position = UDim2.new(0.5, -200, 0.5, -150)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -40, 0, 40)
+title.Position = UDim2.new(0, 20, 0, 10)
+title.Text = "Dupe Hub"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 24
+title.TextXAlignment = Enum.TextXAlignment.Left
+
+local closeBtn = Instance.new("TextButton", frame)
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -35, 0, 5)
+closeBtn.Text = "X"
+closeBtn.BackgroundColor3 = Color3.fromRGB(100, 0, 0)
+closeBtn.TextColor3 = Color3.new(1, 1, 1)
+closeBtn.Font = Enum.Font.SourceSansBold
+closeBtn.TextSize = 18
+closeBtn.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+local dupeBtn = Instance.new("TextButton", frame)
+dupeBtn.Size = UDim2.new(0.8, 0, 0, 40)
+dupeBtn.Position = UDim2.new(0.1, 0, 0.25, 0)
+dupeBtn.Text = "Dupe"
+dupeBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+dupeBtn.TextColor3 = Color3.new(1, 1, 1)
+dupeBtn.Font = Enum.Font.SourceSansBold
+dupeBtn.TextSize = 20
+dupeBtn.MouseButton1Click:Connect(function()
+    local rs = game:GetService("ReplicatedStorage")
+    if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("Trap") then
+        rs.Remotes.Trap:FireServer(nil, "\195\191")
+        warn("Dupe triggered")
+    else
+        warn("Remote not found")
+    end
+end)
+
+local rejoinBtn = Instance.new("TextButton", frame)
+rejoinBtn.Size = UDim2.new(0.8, 0, 0, 40)
+rejoinBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
+rejoinBtn.Text = "Rejoin"
+rejoinBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+rejoinBtn.TextColor3 = Color3.new(1, 1, 1)
+rejoinBtn.Font = Enum.Font.SourceSansBold
+rejoinBtn.TextSize = 20
+rejoinBtn.MouseButton1Click:Connect(function()
+    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+end)
+
+local tutorial = Instance.new("TextLabel", frame)
+tutorial.Size = UDim2.new(0.9, 0, 0, 80)
+tutorial.Position = UDim2.new(0.05, 0, 0.7, 0)
+tutorial.Text = "📌 Tutorial:\n1. Put items in backpack\n2. Rejoin\n3. Press Dupe\n4. Drop item\n5. Rejoin again"
+tutorial.TextColor3 = Color3.new(1, 1, 1)
+tutorial.BackgroundTransparency = 1
+tutorial.Font = Enum.Font.SourceSans
+tutorial.TextSize = 16
+tutorial.TextWrapped = true
+tutorial.TextXAlignment = Enum.TextXAlignment.Left
+tutorial.TextYAlignment = Enum.TextYAlignment.Top
