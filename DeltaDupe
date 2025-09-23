@@ -1,14 +1,11 @@
--- 🔑 Авторизация по ключу
-local player = game.Players.LocalPlayer
-local userKey = getgenv().PahTeTKey or ""
-local validKey = "wjdn*&@#8)@#JWdnjfw,K*"
-
-if userKey ~= validKey then
-	warn("❌ Invalid key:", userKey)
+-- 🔒 Жёсткая проверка ключа ДО всего
+if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "wjdn*&@#8)@#JWdnjfw,K*" then
+	warn("❌ Invalid or missing key")
 	return
 end
 
--- 🧠 GUI
+-- ✅ Только после этого — GUI
+local player = game:GetService("Players").LocalPlayer
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "PahTeTLauncher"
 gui.ResetOnSpawn = false
