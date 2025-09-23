@@ -13,7 +13,6 @@ local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "PahTeTLauncher"
 gui.ResetOnSpawn = false
 
--- 🪟 Основное окно
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 400, 0, 360)
 frame.Position = UDim2.new(0.5, -200, 0.5, -180)
