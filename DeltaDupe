@@ -1,5 +1,4 @@
--- 🔐 Ключевая проверка
-if not getgenv or getgenv().PahTeTKey ~= "PahTeT-Access-Core-918X" then
+if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "PahTeT-Access-Core-918X" then
 	warn("❌ Invalid or missing key")
 	return
 end
@@ -9,7 +8,7 @@ local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "PahTeTLauncher"
 gui.ResetOnSpawn = false
 
--- 🖼 GUI Frame
+-- 🖼 Основной фрейм
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 400, 0, 360)
 frame.Position = UDim2.new(0.5, -200, 0.5, -180)
@@ -20,40 +19,56 @@ local stroke = Instance.new("UIStroke", frame)
 stroke.Thickness = 2
 stroke.Color = Color3.new(1, 1, 1)
 stroke.Transparency = 0.5
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- 🐱 Кот
+-- 🐱 Кот справа от GUI, по центру фрейма
 local catImage = Instance.new("ImageButton", gui)
 catImage.Size = UDim2.new(0, 160, 0, 160)
+
+-- Центр GUI: UDim2.new(0.5, -200, 0.5, -180)
+-- Центр кота: по вертикали тот же (0.5, -80), по горизонтали: -200 + 400 + 75 = 275
 catImage.Position = UDim2.new(0.5, 275, 0.5, -80)
+
 catImage.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 catImage.BorderSizePixel = 0
 catImage.Image = "rbxassetid://109112430589154"
 
+-- ⚪️ Обводка
 local catStroke = Instance.new("UIStroke", catImage)
 catStroke.Thickness = 2
 catStroke.Color = Color3.new(1, 1, 1)
 catStroke.Transparency = 0.5
+catStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
+-- 🔊 Звук
 local sound = Instance.new("Sound", catImage)
 sound.SoundId = "rbxassetid://8551016315"
 sound.Volume = 1
 
+-- 📈 Анимация
 local TweenService = game:GetService("TweenService")
-catImage.MouseButton1Click:Connect(function()
+
+local function animateCat()
 	sound:Play()
-	local grow = TweenService:Create(catImage, TweenInfo.new(0.15), {
+
+	local growTween = TweenService:Create(catImage, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 		Size = UDim2.new(0, 180, 0, 180),
 		Position = UDim2.new(0.5, 265, 0.5, -90)
 	})
-	local shrink = TweenService:Create(catImage, TweenInfo.new(0.15), {
+
+	local shrinkTween = TweenService:Create(catImage, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
 		Size = UDim2.new(0, 160, 0, 160),
 		Position = UDim2.new(0.5, 275, 0.5, -80)
 	})
-	grow:Play()
-	grow.Completed:Connect(function()
-		shrink:Play()
+
+	growTween:Play()
+	growTween.Completed:Connect(function()
+		shrinkTween:Play()
 	end)
-end)
+end
+
+catImage.MouseButton1Click:Connect(animateCat)
+
 
 -- 🖱 Перетаскивание
 local dragging, dragInput, dragStart, startPos
@@ -82,11 +97,20 @@ end)
 game:GetService("UserInputService").InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
 		local delta = input.Position - dragStart
-		local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		frame.Position = newPos
-		catImage.Position = UDim2.new(newPos.X.Scale, newPos.X.Offset + 475, newPos.Y.Scale, newPos.Y.Offset + 100)
+		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 	end
 end)
+
+-- 🏷 Заголовок
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, -40, 0, 40)
+title.Position = UDim2.new(0, 20, 0, 10)
+title.Text = "PahTeT Hub"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 24
+title.TextXAlignment = Enum.TextXAlignment.Left
 
 -- ❌ Закрыть
 local closeBtn = Instance.new("TextButton", frame)
@@ -100,17 +124,6 @@ closeBtn.TextSize = 18
 closeBtn.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
-
--- 🏷 Заголовок
-local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, -40, 0, 40)
-title.Position = UDim2.new(0, 20, 0, 10)
-title.Text = "PahTeT Hub"
-title.TextColor3 = Color3.new(1, 1, 1)
-title.BackgroundTransparency = 1
-title.Font = Enum.Font.SourceSansBold
-title.TextSize = 24
-title.TextXAlignment = Enum.TextXAlignment.Left
 
 -- 🔁 Dupe
 local dupeBtn = Instance.new("TextButton", frame)
@@ -144,29 +157,21 @@ rejoinBtn.MouseButton1Click:Connect(function()
 	game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
 end)
 
+-- 🚀 Start Lirp
+local lirpBtn = Instance.new("TextButton", frame)
+lirpBtn.Size = UDim2.new(0.8, 0, 0, 40)
+lirpBtn.Position = UDim2.new(0.1, 0, 0.65, 0)
+lirpBtn.Text = "Start Lirp"
+lirpBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
+lirpBtn.TextColor3 = Color3.new(1, 1, 1)
+lirpBtn.Font = Enum.Font.SourceSansBold
+lirpBtn.TextSize = 20
 lirpBtn.MouseButton1Click:Connect(function()
-	local MessageBox = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/NotificationGUI/main/source.lua"))()
-	local box = MessageBox.Show({
-		Position = UDim2.new(0.5, 0, 0.5, 0),
-		Text = "Start Lirp?",
-		Description = "Ты точно хочешь запустить Lirp?\nСкрипт от: LirpOfficial",
-		MessageBoxIcon = "Warning",
-		MessageBoxButtons = "YesNo",
-		Result = function(res)
-			if res == "Yes" then
-				if box and box:FindFirstChild("Main") then
-					box:Destroy()
-				end
-				gui:Destroy()
-				getgenv().Key = "EnableModDetectorAgain@!%!5#*@y*UhUEasgfh*di2%#u%@#i#*%@o%12O5HEA*SLGFSTIUDGao@!%@!*(^#T(@UW*UGJIOHSEDH@(#@"
-				loadstring(game:HttpGet("https://raw.githubusercontent.com/LirpOfficial/Lirp/refs/heads/main/Loader", true))()
-			else
-				warn("Lirp launch cancelled.")
-			end
-		end
-	})
+	getgenv().Key = "EnableModDetectorAgain@!%!5#*@y*UhUEasgfh*di2%#u%@#i#*%@o%12O5HEA*SLGFSTIUDGao@!%@!*(^#T(@UW*UGJIOHSEDH@(#@"
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/LirpOfficial/Lirp/refs/heads/main/Loader", true))()
 end)
 
+-- 📘 Туториал
 local tutorial = Instance.new("TextLabel", frame)
 tutorial.Size = UDim2.new(0.9, 0, 0, 80)
 tutorial.Position = UDim2.new(0.05, 0, 0.8, 0)
