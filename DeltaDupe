@@ -1,15 +1,14 @@
--- 🔒 Жёсткая проверка ключа ДО всего
-if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "wjdn*&@#8)@#JWdnjfw,K*" then
+if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "PahTeT-Access-Core-918X" then
 	warn("❌ Invalid or missing key")
 	return
 end
 
--- ✅ Только после этого — GUI
 local player = game:GetService("Players").LocalPlayer
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "PahTeTLauncher"
 gui.ResetOnSpawn = false
 
+-- 🖼 Основной фрейм
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 400, 0, 360)
 frame.Position = UDim2.new(0.5, -200, 0.5, -180)
@@ -21,6 +20,55 @@ stroke.Thickness = 2
 stroke.Color = Color3.new(1, 1, 1)
 stroke.Transparency = 0.5
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+-- 🐱 Кот справа от GUI, по центру фрейма
+local catImage = Instance.new("ImageButton", gui)
+catImage.Size = UDim2.new(0, 160, 0, 160)
+
+-- Центр GUI: UDim2.new(0.5, -200, 0.5, -180)
+-- Центр кота: по вертикали тот же (0.5, -80), по горизонтали: -200 + 400 + 75 = 275
+catImage.Position = UDim2.new(0.5, 275, 0.5, -80)
+
+catImage.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+catImage.BorderSizePixel = 0
+catImage.Image = "rbxassetid://109112430589154"
+
+-- ⚪️ Обводка
+local catStroke = Instance.new("UIStroke", catImage)
+catStroke.Thickness = 2
+catStroke.Color = Color3.new(1, 1, 1)
+catStroke.Transparency = 0.5
+catStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+-- 🔊 Звук
+local sound = Instance.new("Sound", catImage)
+sound.SoundId = "rbxassetid://8551016315"
+sound.Volume = 1
+
+-- 📈 Анимация
+local TweenService = game:GetService("TweenService")
+
+local function animateCat()
+	sound:Play()
+
+	local growTween = TweenService:Create(catImage, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+		Size = UDim2.new(0, 180, 0, 180),
+		Position = UDim2.new(0.5, 265, 0.5, -90)
+	})
+
+	local shrinkTween = TweenService:Create(catImage, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+		Size = UDim2.new(0, 160, 0, 160),
+		Position = UDim2.new(0.5, 275, 0.5, -80)
+	})
+
+	growTween:Play()
+	growTween.Completed:Connect(function()
+		shrinkTween:Play()
+	end)
+end
+
+catImage.MouseButton1Click:Connect(animateCat)
+
 
 -- 🖱 Перетаскивание
 local dragging, dragInput, dragStart, startPos
@@ -135,14 +183,3 @@ tutorial.TextSize = 16
 tutorial.TextWrapped = true
 tutorial.TextXAlignment = Enum.TextXAlignment.Left
 tutorial.TextYAlignment = Enum.TextYAlignment.Top
-
--- 🧾 Инфо-секция
-local info = Instance.new("TextLabel", frame)
-info.Size = UDim2.new(1, -20, 0, 20)
-info.Position = UDim2.new(0, 10, 1, -25)
-info.Text = "Made by PahTeT | Discord: discord.gg/yourlink"
-info.TextColor3 = Color3.fromRGB(200, 200, 200)
-info.BackgroundTransparency = 1
-info.Font = Enum.Font.SourceSansItalic
-info.TextSize = 14
-info.TextXAlignment = Enum.TextXAlignment.Center
