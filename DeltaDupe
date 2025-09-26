@@ -89,12 +89,12 @@ catStroke.Color = Color3.new(1, 1, 1)
 catStroke.Transparency = 0.5
 catStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
-local sound = Instance.new("Sound", catImage)
-sound.SoundId = "rbxassetid://8551016315"
-sound.Volume = 1
+local catSound = Instance.new("Sound", catImage)
+catSound.SoundId = "rbxassetid://8551016315"
+catSound.Volume = 1
 
 local function animateCat()
-	sound:Play()
+	catSound:Play()
 	local growTween = TweenService:Create(catImage, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 		Size = UDim2.new(0, 180, 0, 180),
 		Position = UDim2.new(0.5, 265, 0.5, -90)
@@ -189,4 +189,4 @@ rejoinBtn.Size = UDim2.new(0.8, 0, 0, 40)
 rejoinBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
 rejoinBtn.Text = "Rejoin"
 rejoinBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-rejoinBtn
+rejoin
