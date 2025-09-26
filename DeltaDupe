@@ -167,8 +167,8 @@ lirpBtn.TextColor3 = Color3.new(1, 1, 1)
 lirpBtn.Font = Enum.Font.SourceSansBold
 lirpBtn.TextSize = 20
 lirpBtn.MouseButton1Click:Connect(function()
-	getgenv().Key = "EnableModDetectorAgain@!%!5#*@y*UhUEasgfh*di2%#u%@#i#*%@o%12O5HEA*SLGFSTIUDGao@!%@!*(^#T(@UW*UGJIOHSEDH@(#@"
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/LirpOfficial/Lirp/refs/heads/main/Loader", true))()
+	getgenv().Key = "@#%Item!@$!@$@%*Finder&@!&%&%@#@#^!@$*%!@)yey@&!%*)@!%)@%!*(@!%*)"
+loadstring(game:HttpGet("https://raw.githubusercontent.com/LirpOfficial/Lirp/refs/heads/main/Loader", true))()
 end)
 
 -- 📘 Туториал
