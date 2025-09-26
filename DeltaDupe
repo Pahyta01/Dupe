@@ -24,7 +24,7 @@ getgenv().PahTeTBlacklist = getgenv().PahTeTBlacklist or {}
 getgenv().PahTeTLog = getgenv().PahTeTLog or {}
 
 -- 👇 Вставь сюда бан
-getgenv().PahTeTBlacklist[8951663194] = "🚫 Нарушение правил"
+
 local userId = game:GetService("Players").LocalPlayer.UserId
 
 if getgenv().PahTeTBlacklist[userId] then
