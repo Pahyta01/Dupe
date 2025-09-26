@@ -1,26 +1,63 @@
-local DataStoreKey = "PahTeTLauncherUsage"
-local HttpService = game:GetService("HttpService")
-local player = game:GetService("Players").LocalPlayer
-
--- Уникальный ID устройства (можно заменить на player.UserId для онлайн-отслеживания)
-local deviceId = HttpService:GenerateGUID(false)
-
--- Хранилище в getgenv
-getgenv()[DataStoreKey] = getgenv()[DataStoreKey] or {}
-local usageTable = getgenv()[DataStoreKey]
-
--- Если устройство ещё не записано — добавляем
-if not usageTable[deviceId] then
-	usageTable[deviceId] = true
+-- 🔐 Проверка ключа
+if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "PahTeT-Access-Core-918X" then
+	warn("❌ Invalid or missing key")
+	return
 end
 
--- Подсчёт уникальных устройств
+-- 📦 Сервисы
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- 🧠 Хранилище (глобальное, сохраняется в getgenv)
+getgenv().PahTeTUsers = getgenv().PahTeTUsers or {} -- список всех, кто запускал GUI
+getgenv().PahTeTBlacklist = getgenv().PahTeTBlacklist or { -- чёрный список
+	-- ["имя"] = "причина"
+	["f5j5"] = "Пытался обойти защиту"
+	["x9k2"] = "Спамил в GUI"
+	["a1b2"] = "Нарушил правила"
+}
+
+-- 🔤 Генератор 4-символьного имени
+local function generateName()
+	local charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+	local name = ""
+	for i = 1, 4 do
+		local rand = math.random(1, #charset)
+		name = name .. charset:sub(rand, rand)
+	end
+	return name
+end
+
+-- 👤 Присваиваем имя игроку, если ещё нет
+local userId = player.UserId
+if not getgenv().PahTeTUsers[userId] then
+	getgenv().PahTeTUsers[userId] = generateName()
+end
+
+local userName = getgenv().PahTeTUsers[userId]
+
+-- 📊 Подсчёт уникальных пользователей
 local totalUsers = 0
-for _ in pairs(usageTable) do
+for _ in pairs(getgenv().PahTeTUsers) do
 	totalUsers += 1
 end
 
-warn("📊 PahTeT Hub использовали на " .. totalUsers .. " уникальных устройствах") 
+-- 📛 Проверка чёрного списка
+if getgenv().PahTeTBlacklist[userName] then
+	local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
+	sound.SoundId = "rbxassetid://131803555321436"
+	sound.Volume = 1
+	sound:Play()
+
+	warn("⛔️ Пользователь " .. userName .. " в чёрном списке. Кик...")
+	task.wait(2)
+	player:Kick("🚫 Ты в чёрном списке PahTeT Hub. Причина: " .. getgenv().PahTeTBlacklist[userName])
+	return
+end
+
+-- ✅ Вывод в F9
+warn("✅ [" .. totalUsers .. "] Новый пользователь: " .. userName)
 
 if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "PahTeT-Access-Core-918X" then
 	warn("❌ Invalid or missing key")
