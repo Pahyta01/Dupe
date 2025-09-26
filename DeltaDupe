@@ -7,18 +7,21 @@ end
 -- 📦 Сервисы
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local TeleportService = game:GetService("TeleportService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
 
--- 🧠 Хранилище (глобальное, сохраняется в getgenv)
-getgenv().PahTeTUsers = getgenv().PahTeTUsers or {} -- список всех, кто запускал GUI
-getgenv().PahTeTBlacklist = getgenv().PahTeTBlacklist or { -- чёрный список
-	-- ["имя"] = "причина"
-	["f5j5"] = "Пытался обойти защиту"
-	["x9k2"] = "Спамил в GUI"
+-- 🧠 Хранилище
+getgenv().PahTeTUsers = getgenv().PahTeTUsers or {}
+getgenv().PahTeTBlacklist = getgenv().PahTeTBlacklist or {
+	["f5j5"] = "Пытался обойти защиту",
+	["x9k2"] = "Спамил в GUI",
 	["a1b2"] = "Нарушил правила"
 }
 
--- 🔤 Генератор 4-символьного имени
+-- 🔤 Генератор имени
 local function generateName()
 	local charset = "abcdefghijklmnopqrstuvwxyz0123456789"
 	local name = ""
@@ -29,47 +32,37 @@ local function generateName()
 	return name
 end
 
--- 👤 Присваиваем имя игроку, если ещё нет
+-- 👤 Присваиваем имя
 local userId = player.UserId
 if not getgenv().PahTeTUsers[userId] then
 	getgenv().PahTeTUsers[userId] = generateName()
 end
-
 local userName = getgenv().PahTeTUsers[userId]
 
--- 📊 Подсчёт уникальных пользователей
-local totalUsers = 0
-for _ in pairs(getgenv().PahTeTUsers) do
-	totalUsers += 1
-end
-
--- 📛 Проверка чёрного списка
+-- 📛 Чёрный список
 if getgenv().PahTeTBlacklist[userName] then
 	local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
 	sound.SoundId = "rbxassetid://131803555321436"
 	sound.Volume = 1
 	sound:Play()
-
 	warn("⛔️ Пользователь " .. userName .. " в чёрном списке. Кик...")
 	task.wait(2)
 	player:Kick("🚫 Ты в чёрном списке PahTeT Hub. Причина: " .. getgenv().PahTeTBlacklist[userName])
 	return
 end
 
--- ✅ Вывод в F9
+-- 📊 Вывод в F9
+local totalUsers = 0
+for _ in pairs(getgenv().PahTeTUsers) do
+	totalUsers += 1
+end
 warn("✅ [" .. totalUsers .. "] Новый пользователь: " .. userName)
 
-if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "PahTeT-Access-Core-918X" then
-	warn("❌ Invalid or missing key")
-	return
-end
-
-local player = game:GetService("Players").LocalPlayer
+-- 🖼 GUI
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "PahTeTLauncher"
 gui.ResetOnSpawn = false
 
--- 🖼 Основной фрейм
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 400, 0, 360)
 frame.Position = UDim2.new(0.5, -200, 0.5, -180)
@@ -82,54 +75,40 @@ stroke.Color = Color3.new(1, 1, 1)
 stroke.Transparency = 0.5
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- 🐱 Кот справа от GUI, по центру фрейма
+-- 🐱 Кот
 local catImage = Instance.new("ImageButton", gui)
 catImage.Size = UDim2.new(0, 160, 0, 160)
-
--- Центр GUI: UDim2.new(0.5, -200, 0.5, -180)
--- Центр кота: по вертикали тот же (0.5, -80), по горизонтали: -200 + 400 + 75 = 275
 catImage.Position = UDim2.new(0.5, 275, 0.5, -80)
-
 catImage.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 catImage.BorderSizePixel = 0
 catImage.Image = "rbxassetid://109112430589154"
 
--- ⚪️ Обводка
 local catStroke = Instance.new("UIStroke", catImage)
 catStroke.Thickness = 2
 catStroke.Color = Color3.new(1, 1, 1)
 catStroke.Transparency = 0.5
 catStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 
--- 🔊 Звук
 local sound = Instance.new("Sound", catImage)
 sound.SoundId = "rbxassetid://8551016315"
 sound.Volume = 1
 
--- 📈 Анимация
-local TweenService = game:GetService("TweenService")
-
 local function animateCat()
 	sound:Play()
-
 	local growTween = TweenService:Create(catImage, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 		Size = UDim2.new(0, 180, 0, 180),
 		Position = UDim2.new(0.5, 265, 0.5, -90)
 	})
-
 	local shrinkTween = TweenService:Create(catImage, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
 		Size = UDim2.new(0, 160, 0, 160),
 		Position = UDim2.new(0.5, 275, 0.5, -80)
 	})
-
 	growTween:Play()
 	growTween.Completed:Connect(function()
 		shrinkTween:Play()
 	end)
 end
-
 catImage.MouseButton1Click:Connect(animateCat)
-
 
 -- 🖱 Перетаскивание
 local dragging, dragInput, dragStart, startPos
@@ -155,7 +134,7 @@ frame.InputChanged:Connect(function(input)
 	end
 end)
 
-game:GetService("UserInputService").InputChanged:Connect(function(input)
+UserInputService.InputChanged:Connect(function(input)
 	if input == dragInput and dragging then
 		local delta = input.Position - dragStart
 		frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
@@ -196,9 +175,8 @@ dupeBtn.TextColor3 = Color3.new(1, 1, 1)
 dupeBtn.Font = Enum.Font.SourceSansBold
 dupeBtn.TextSize = 20
 dupeBtn.MouseButton1Click:Connect(function()
-	local rs = game:GetService("ReplicatedStorage")
-	if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("Trap") then
-		rs.Remotes.Trap:FireServer(nil, "\195\191")
+	if ReplicatedStorage:FindFirstChild("Remotes") and ReplicatedStorage.Remotes:FindFirstChild("Trap") then
+		ReplicatedStorage.Remotes.Trap:FireServer(nil, "\195\191")
 		warn("Dupe triggered")
 	else
 		warn("Remote not found")
@@ -211,36 +189,4 @@ rejoinBtn.Size = UDim2.new(0.8, 0, 0, 40)
 rejoinBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
 rejoinBtn.Text = "Rejoin"
 rejoinBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-rejoinBtn.TextColor3 = Color3.new(1, 1, 1)
-rejoinBtn.Font = Enum.Font.SourceSansBold
-rejoinBtn.TextSize = 20
-rejoinBtn.MouseButton1Click:Connect(function()
-	game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
-end)
-
--- 🚀 Start Lirp
-local lirpBtn = Instance.new("TextButton", frame)
-lirpBtn.Size = UDim2.new(0.8, 0, 0, 40)
-lirpBtn.Position = UDim2.new(0.1, 0, 0.65, 0)
-lirpBtn.Text = "Start Lirp"
-lirpBtn.BackgroundColor3 = Color3.fromRGB(255, 170, 0)
-lirpBtn.TextColor3 = Color3.new(1, 1, 1)
-lirpBtn.Font = Enum.Font.SourceSansBold
-lirpBtn.TextSize = 20
-lirpBtn.MouseButton1Click:Connect(function()
-	getgenv().Key = "@#%Item!@$!@$@%*Finder&@!&%&%@#@#^!@$*%!@)yey@&!%*)@!%)@%!*(@!%*)"
-loadstring(game:HttpGet("https://raw.githubusercontent.com/LirpOfficial/Lirp/refs/heads/main/Loader", true))()
-end)
-
--- 📘 Туториал
-local tutorial = Instance.new("TextLabel", frame)
-tutorial.Size = UDim2.new(0.9, 0, 0, 80)
-tutorial.Position = UDim2.new(0.05, 0, 0.8, 0)
-tutorial.Text = "📌 Tutorial:\n1. Put loot in backpack\n2. Rejoin\n3. Press Dupe, drop backpack, then Rejoin"
-tutorial.TextColor3 = Color3.new(1, 1, 1)
-tutorial.BackgroundTransparency = 1
-tutorial.Font = Enum.Font.SourceSans
-tutorial.TextSize = 16
-tutorial.TextWrapped = true
-tutorial.TextXAlignment = Enum.TextXAlignment.Left
-tutorial.TextYAlignment = Enum.TextYAlignment.Top
+rejoinBtn
