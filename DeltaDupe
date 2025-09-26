@@ -1,3 +1,27 @@
+local DataStoreKey = "PahTeTLauncherUsage"
+local HttpService = game:GetService("HttpService")
+local player = game:GetService("Players").LocalPlayer
+
+-- Уникальный ID устройства (можно заменить на player.UserId для онлайн-отслеживания)
+local deviceId = HttpService:GenerateGUID(false)
+
+-- Хранилище в getgenv
+getgenv()[DataStoreKey] = getgenv()[DataStoreKey] or {}
+local usageTable = getgenv()[DataStoreKey]
+
+-- Если устройство ещё не записано — добавляем
+if not usageTable[deviceId] then
+	usageTable[deviceId] = true
+end
+
+-- Подсчёт уникальных устройств
+local totalUsers = 0
+for _ in pairs(usageTable) do
+	totalUsers += 1
+end
+
+warn("📊 PahTeT Hub использовали на " .. totalUsers .. " уникальных устройствах") 
+
 if not getgenv or typeof(getgenv) ~= "function" or getgenv().PahTeTKey ~= "PahTeT-Access-Core-918X" then
 	warn("❌ Invalid or missing key")
 	return
