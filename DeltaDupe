@@ -1,12 +1,14 @@
+-- 🔑 Проверка ключа
 local validKeys = {
 	["@PahTeT!@#%*SoloCreator@!%*KeyAccess@!%"] = true
 }
 
 if not validKeys[getgenv().Key] then
-	game.Players.LocalPlayer:Kick("⛔️YouKeyIn:https://discord.gg/ttQMyKvKt6")
+	game.Players.LocalPlayer:Kick("⛔️ Неверный ключ. Получи его на: https://discord.gg/ttQMyKvKt6")
 	return
 end
 
+-- 📦 Сервисы
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -14,34 +16,28 @@ local TeleportService = game:GetService("TeleportService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local player = Players.LocalPlayer
 
+-- 🚫 Бан по UserId
 getgenv().PahTeTBlacklist = getgenv().PahTeTBlacklist or {}
 getgenv().PahTeTLog = getgenv().PahTeTLog or {}
 
 local userId = player.UserId
 
--- 📛 Бан по UserId
-getgenv().PahTeTBlacklist = getgenv().PahTeTBlacklist or {}
-getgenv().PahTeTLog = getgenv().PahTeTLog or {}
-
--- 👇 Вставь сюда бан
-
-local userId = game:GetService("Players").LocalPlayer.UserId
-
 if getgenv().PahTeTBlacklist[userId] then
-	local sound = Instance.new("Sound", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+	local sound = Instance.new("Sound", player:WaitForChild("PlayerGui"))
 	sound.SoundId = "rbxassetid://131803555321436"
 	sound.Volume = 1
 	sound:Play()
 	task.wait(2)
-	game.Players.LocalPlayer:Kick("🚫 Ты забанен в PahTeT Hub. Причина: " .. getgenv().PahTeTBlacklist[userId])
+	player:Kick("🚫 Ты забанен в PahTeT Hub. Причина: " .. getgenv().PahTeTBlacklist[userId])
 	return
 end
-
 
 -- 📋 Лог запуска
 if not table.find(getgenv().PahTeTLog, userId) then
 	table.insert(getgenv().PahTeTLog, userId)
 end
+
+-- 🖼️ GUI
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "PahTeTLauncher"
 gui.ResetOnSpawn = false
@@ -68,13 +64,17 @@ closeBtn.TextSize = 18
 closeBtn.MouseButton1Click:Connect(function()
 	gui:Destroy()
 end)
-
 -- 🐱 Кот
-local cat = Instance.new("ImageButton", gui)
+local cat = Instance.new("ImageButton", frame)
 cat.Size = UDim2.new(0, 160, 0, 160)
 cat.Position = UDim2.new(0.5, 275, 0.5, -80)
 cat.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 cat.Image = "rbxassetid://109112430589154"
+
+local catStroke = Instance.new("UIStroke", cat)
+catStroke.Thickness = 2
+catStroke.Color = Color3.new(1, 1, 1)
+catStroke.Transparency = 0.5
 
 local catSound = Instance.new("Sound", cat)
 catSound.SoundId = "rbxassetid://8551016315"
@@ -96,7 +96,7 @@ cat.MouseButton1Click:Connect(function()
 	end)
 end)
 
--- 🖱️ Перетаскивание
+-- 🖱️ Перетаскивание GUI
 local dragging, dragInput, dragStart, startPos
 frame.Active = true
 frame.Draggable = false
@@ -154,6 +154,8 @@ makeButton("Start Lirp", 0.65, Color3.fromRGB(255,170,0), function()
 	getgenv().Key = "@#%Item!@$!@$@%*Finder&@!&%&%@#@#^!@$*%!@)yey@&!%*)@!%)@%!*(@!%*)"
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/LirpOfficial/Lirp/refs/heads/main/Loader", true))()
 end)
+
+-- 📌 Туториал
 local tutorial = Instance.new("TextLabel", frame)
 tutorial.Size = UDim2.new(0.9, 0, 0, 80)
 tutorial.Position = UDim2.new(0.05, 0, 0.8, 0)
