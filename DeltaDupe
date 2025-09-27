@@ -1,6 +1,6 @@
 -- 🔑 Проверка ключа
 local validKeys = {
-	["@PahTeT!@#%*SoloCreator@!%*KeyAccess@!%"] = true
+	["@PahTeT!@#%*SoloCreator@!%KeyAccess@!%"] = true
 }
 
 if not validKeys[getgenv().Key] then
